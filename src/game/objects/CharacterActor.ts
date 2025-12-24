@@ -77,6 +77,11 @@ export class CharacterActor
         startIdleLoop(this.scene, this.characterId, this.sprite, this.idleSpriteKey);
     }
 
+    resetToIdle (){
+        this.startRunning();
+        this.stopRunning();
+    }
+
     showJumpFrame (frameIndex = 2)
     {
         const currentFrame = this.sprite.frame?.name;

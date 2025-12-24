@@ -64,7 +64,7 @@ export class Game extends Scene
             tileOverlap: 1,
             viewportWidth: width,
             widthScale: 0.5,
-            heightScale: 0.5,
+            heightScale: 0.6,
             bufferTiles: 3
         });
 
@@ -143,7 +143,7 @@ export class Game extends Scene
                 body.setVelocityX(0);
                 if (isOnGround)
                 {
-                    this.character?.stopRunning();
+                    this.character?.resetToIdle();
                 }
             }
 
