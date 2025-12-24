@@ -9,6 +9,9 @@ import { GroundGenerator } from '../objects/GroundGenerator';
 
 const CLOUDS_SCROLL_FACTOR = 0.25;
 const MOUNTAINS_SCROLL_FACTOR = 0.15;
+const MOUNTAINS_VERTICAL_FACTOR = 0.3;
+const CLOUDS_VERTICAL_FACTOR = 0.2;
+
 const CHARACTER_SCALE_FACTOR = 0.33;
 const MOVE_SPEED = 260;
 const GROUND_Y_FACTOR = 0.25;
@@ -28,6 +31,7 @@ export class Game extends Scene
     private hasDoubleJumped = false;
     private wasOnGround = false;
     private lastMoveDirection = 1;
+    private baseScrollY = 0;
 
     constructor ()
     {
@@ -45,8 +49,16 @@ export class Game extends Scene
         this.cameras.main.setBackgroundColor(GAME_BACKGROUND_COLOR);
 
         this.parallax = new ParallaxBackground(this, width, height, [
-            { key: ASSET_KEYS.backgrounds.clouds, speed: CLOUDS_SCROLL_FACTOR, alpha: 0.75, depth: 0 },
-            { key: ASSET_KEYS.backgrounds.mountains, speed: MOUNTAINS_SCROLL_FACTOR, alpha: 1, depth: 1, height: mountainHeight, y: mountainY }
+            { key: ASSET_KEYS.backgrounds.clouds, speed: CLOUDS_SCROLL_FACTOR, alpha: 0.75, depth: 0, verticalFactor: -CLOUDS_VERTICAL_FACTOR },
+            {
+                key: ASSET_KEYS.backgrounds.mountains,
+                speed: MOUNTAINS_SCROLL_FACTOR,
+                alpha: 1,
+                depth: 1,
+                height: mountainHeight,
+                y: mountainY,
+                verticalFactor: MOUNTAINS_VERTICAL_FACTOR
+            }
         ]);
 
         const groundBaseY = height * GROUND_Y_FACTOR;
@@ -86,6 +98,7 @@ export class Game extends Scene
         }
 
         this.cameras.main.startFollow(this.character.getSprite(), true, 0.2, 1, 0, height * 0.35);
+        this.baseScrollY = this.cameras.main.scrollY;
 
         this.cursors = this.input.keyboard?.createCursorKeys();
         if (this.cursors)
@@ -173,7 +186,9 @@ export class Game extends Scene
 
         if (this.parallax)
         {
-            this.parallax.update(this.cameras.main.scrollX);
+            const camera = this.cameras.main;
+            const jumpOffset = Math.max(0, this.baseScrollY - camera.scrollY);
+            this.parallax.update(camera.scrollX, jumpOffset);
         }
 
         if (this.ground)
