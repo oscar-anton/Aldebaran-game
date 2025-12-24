@@ -1,4 +1,4 @@
-import { GameObjects, Math as PhaserMath, Scene } from 'phaser';
+import { Math as PhaserMath, Scene } from 'phaser';
 
 export type GroundGeneratorConfig = {
     textureKey: string;
@@ -32,7 +32,7 @@ type GroundGeneratorState = {
 export class GroundGenerator
 {
     private scene: Scene;
-    private tiles: GameObjects.Image[] = [];
+    private tiles: Phaser.Types.Physics.Arcade.ImageWithStaticBody[] = [];
     private config?: GroundGeneratorState;
 
     constructor (scene: Scene)
@@ -54,8 +54,8 @@ export class GroundGenerator
         const tileOverlap = Math.max(0, config.tileOverlap ?? 1);
         const texture = this.scene.textures.get(config.textureKey);
         const baseFrame = texture.get(0);
-        const tileWidth = baseFrame.width/2;
-        const tileHeight = baseFrame.height*0.6;
+        const tileWidth = baseFrame.width;
+        const tileHeight = baseFrame.height;
         const displayWidth = Math.round(tileWidth * widthScale);
         const displayHeight = Math.round(tileHeight * heightScale);
         const stepX = Math.max(1, Math.round(displayWidth - tileOverlap));
@@ -121,8 +121,8 @@ export class GroundGenerator
             }
 
             const column = PhaserMath.Between(0, this.config.columns - 1);
-            this.applyFrame(tile, column);
             tile.x = Math.round(right.x + this.config.stepX);
+            this.applyFrame(tile, column);
             this.tiles.push(tile);
             right = tile;
             left = this.tiles[0];
@@ -137,12 +137,17 @@ export class GroundGenerator
             }
 
             const column = PhaserMath.Between(0, this.config.columns - 1);
-            this.applyFrame(tile, column);
             tile.x = Math.round(left.x - this.config.stepX);
+            this.applyFrame(tile, column);
             this.tiles.unshift(tile);
             left = tile;
             right = this.tiles[this.tiles.length - 1];
         }
+    }
+
+    getTiles ()
+    {
+        return this.tiles;
     }
 
     private createTile (
@@ -160,16 +165,17 @@ export class GroundGenerator
         }
     )
     {
-        const tile = this.scene.add.image(x, y, options.textureKey, options.frameStart + column)
+        const tile = this.scene.physics.add.staticImage(x, y, options.textureKey, options.frameStart + column)
             .setOrigin(0, 0)
             .setDepth(options.depth);
 
         tile.setDisplaySize(options.displayWidth, options.displayHeight);
+        tile.refreshBody();
 
         return tile;
     }
 
-    private applyFrame (tile: GameObjects.Image, column: number)
+    private applyFrame (tile: Phaser.Types.Physics.Arcade.ImageWithStaticBody, column: number)
     {
         if (!this.config)
         {
@@ -180,6 +186,7 @@ export class GroundGenerator
         tile.setDisplaySize(this.config.displayWidth, this.config.displayHeight);
         tile.setDepth(this.config.depth);
         tile.y = this.config.groundY;
+        tile.refreshBody();
     }
 
     private clear ()

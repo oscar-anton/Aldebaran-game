@@ -1,4 +1,4 @@
-import { GameObjects, Scene } from 'phaser';
+import { Scene } from 'phaser';
 
 import { ensureIdleAnimations, ensureRunAnimation, IDLE_FRAME_SIZE, startIdleLoop, startRunning } from '../animations/idleAnimations';
 
@@ -17,11 +17,12 @@ export type CharacterActorConfig = {
 export class CharacterActor
 {
     private scene: Scene;
-    private sprite: GameObjects.Sprite;
+    private sprite: Phaser.Physics.Arcade.Sprite;
     private characterId: string;
     private idleSpriteKey: string;
     private runSpriteKey: string;
     private isRunning = false;
+    private isJumping = false;
     private baseScale = 1;
     private runScale = 1;
 
@@ -35,7 +36,7 @@ export class CharacterActor
         ensureIdleAnimations(scene, this.characterId, this.idleSpriteKey);
         ensureRunAnimation(scene, this.characterId, this.runSpriteKey);
 
-        this.sprite = scene.add.sprite(config.x, config.y, this.idleSpriteKey)
+        this.sprite = scene.physics.add.sprite(config.x, config.y, this.idleSpriteKey)
             .setOrigin(0.5, 1)
             .setDepth(config.depth ?? 2);
 
@@ -58,6 +59,7 @@ export class CharacterActor
         }
 
         this.isRunning = true;
+        this.isJumping = false;
         this.sprite.setScale(this.runScale);
         startRunning(this.characterId, this.sprite, this.runSpriteKey);
     }
@@ -70,8 +72,29 @@ export class CharacterActor
         }
 
         this.isRunning = false;
+        this.isJumping = false;
         this.sprite.setScale(this.baseScale);
         startIdleLoop(this.scene, this.characterId, this.sprite, this.idleSpriteKey);
+    }
+
+    showJumpFrame (frameIndex = 2)
+    {
+        const currentFrame = this.sprite.frame?.name;
+        if (
+            this.isJumping
+            && this.sprite.texture.key === this.runSpriteKey
+            && (currentFrame === frameIndex || currentFrame === String(frameIndex))
+        )
+        {
+            return;
+        }
+
+        this.isJumping = true;
+        this.isRunning = false;
+        startRunning(this.characterId, this.sprite, this.runSpriteKey);
+        this.sprite.anims.stop();
+        this.sprite.setTexture(this.runSpriteKey, frameIndex);
+        this.sprite.setScale(this.runScale);
     }
 
     getSprite ()
