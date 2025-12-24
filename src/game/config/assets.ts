@@ -15,7 +15,8 @@ export const ASSET_KEYS = {
         linxPixel: 'linx-pixel'
     },
     environment: {
-        jungleTiles: 'jungle-tiles'
+        jungleTiles: 'jungle-tiles',
+        groundTiles: 'ground-tiles'
     },
     ui: {
         logoAldebaran: 'logo-aldebaran'
@@ -36,7 +37,8 @@ export const ASSET_PATHS = {
         linxPixel: `${IMG_PATH}/linx_pixelart.png`
     },
     environment: {
-        jungleTiles: `${IMG_PATH}/jungla_tiles.png`
+        jungleTiles: `${IMG_PATH}/jungla_tiles.png`,
+        groundTiles: `${IMG_PATH}/ground_tiles.png`
     },
     ui: {
         logoAldebaran: `${ROOT_ASSET_PATH}/logo-aldebaran.png`
@@ -64,6 +66,11 @@ export type SpriteSheetAsset = {
 export const IDLE_FRAME_CONFIG: FrameConfig = {
     frameWidth: 256,
     frameHeight: 256
+};
+
+export const GROUND_TILE_FRAME_CONFIG: FrameConfig = {
+    frameWidth: 276,
+    frameHeight: 270
 };
 
 export const MENU_IMAGE_ASSETS: ImageAsset[] = [

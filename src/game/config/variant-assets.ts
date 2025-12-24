@@ -1,4 +1,4 @@
-import { ASSET_KEYS, ASSET_PATHS, IDLE_FRAME_CONFIG, ImageAsset, SpriteSheetAsset } from './assets';
+import { ASSET_KEYS, ASSET_PATHS, GROUND_TILE_FRAME_CONFIG, IDLE_FRAME_CONFIG, ImageAsset, SpriteSheetAsset } from './assets';
 import { GameVariantKey } from './variants';
 
 export type VariantAssetBundle = {
@@ -19,10 +19,12 @@ const variantImages: Record<GameVariantKey, ImageAsset[]> = {
 
 const variantSpritesheets: Record<GameVariantKey, SpriteSheetAsset[]> = {
     grade1: [
+        { key: ASSET_KEYS.environment.groundTiles, path: ASSET_PATHS.environment.groundTiles, frameConfig: GROUND_TILE_FRAME_CONFIG },
         { key: ASSET_KEYS.characters.linxIdle, path: ASSET_PATHS.characters.linxIdle, frameConfig: IDLE_FRAME_CONFIG },
         { key: ASSET_KEYS.characters.linxRun, path: ASSET_PATHS.characters.linxRun, frameConfig: IDLE_FRAME_CONFIG }
     ],
     grade4: [
+        { key: ASSET_KEYS.environment.groundTiles, path: ASSET_PATHS.environment.groundTiles, frameConfig: GROUND_TILE_FRAME_CONFIG },
         { key: ASSET_KEYS.characters.monkeyIdle, path: ASSET_PATHS.characters.monkeyIdle, frameConfig: IDLE_FRAME_CONFIG },
         { key: ASSET_KEYS.characters.monkeyRun, path: ASSET_PATHS.characters.monkeyRun, frameConfig: IDLE_FRAME_CONFIG }
     ]

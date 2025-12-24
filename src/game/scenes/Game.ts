@@ -5,6 +5,7 @@ import { ASSET_KEYS, GAME_BACKGROUND_COLOR, getVariant } from '../config';
 import { GameState } from '../state/GameState';
 import { ParallaxBackground } from '../objects/ParallaxBackground';
 import { CharacterActor } from '../objects/CharacterActor';
+import { GroundGenerator } from '../objects/GroundGenerator';
 
 const CLOUDS_SCROLL_FACTOR = 0.25;
 const MOUNTAINS_SCROLL_FACTOR = 0.15;
@@ -15,6 +16,7 @@ export class Game extends Scene
 {
     private parallax?: ParallaxBackground;
     private character?: CharacterActor;
+    private ground?: GroundGenerator;
     private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
 
     constructor ()
@@ -37,13 +39,27 @@ export class Game extends Scene
             { key: ASSET_KEYS.backgrounds.mountains, speed: MOUNTAINS_SCROLL_FACTOR, alpha: 1, depth: 1, height: mountainHeight, y: mountainY }
         ]);
 
-        const groundY = height * 0.25;
+        const characterY = height * 0.25;
+        const groundY = characterY;
+
+        this.ground = new GroundGenerator(this);
+        this.ground.build({
+            textureKey: ASSET_KEYS.environment.groundTiles,
+            groundY,
+            groundYOffset: -30,
+            columns: 3,
+            rowIndex: 0,
+            depth: 2,
+            tileOverlap: 1,
+            viewportWidth: width,
+            bufferTiles: 3
+        });
 
         const baseHeight = Math.min(360, height * 0.45);
         const targetHeight = baseHeight * CHARACTER_SCALE_FACTOR;
         this.character = new CharacterActor(this, {
             x: width * 0.5,
-            y: groundY,
+            y: characterY,
             characterId: variant.character.id,
             idleSpriteKey: variant.character.idleSpriteKey,
             runSpriteKey: variant.character.runSpriteKey,
@@ -96,6 +112,11 @@ export class Game extends Scene
         if (this.parallax)
         {
             this.parallax.update(this.cameras.main.scrollX);
+        }
+
+        if (this.ground)
+        {
+            this.ground.update(this.cameras.main.scrollX);
         }
     }
 }
